@@ -1,1 +1,131 @@
 #include "Parser.h"
+
+/*
+* Constructor
+*/
+Parser::Parser(Lexer* lexer) : m_lexer(lexer){}
+
+/*
+* extract number from the stream token
+* handle unary minus
+* handle parenthesis
+
+    E   ->  NUMBER                                      ( double )
+    E   ->  MINUS E                                     ( - expression )
+    E   ->  LEFT_PARE B RIGHT_PARE                      ( ( addSub ) )
+*/
+double Parser::parsePrimaryExpression()
+{
+    m_lexer->getNextToken();
+
+    switch (m_lexer->getCurrentToken())
+    {
+    case ETokenType::NUMBER:
+    {
+        double d_number = m_lexer->getNumber();
+        m_lexer->getNextToken();
+
+        return d_number;
+    }
+
+    case ETokenType::MINUS:
+        return -parsePrimaryExpression();
+
+    case ETokenType::LEFT_PARE:
+    {
+        double d_result = parseAddSub();
+
+        if (m_lexer->getCurrentToken() != ETokenType::RIGHT_PARE)
+        {
+            throw std::string("Synthax Error : missing bracket");
+        }
+        m_lexer->getNextToken();
+
+        return d_result;
+    }
+
+    default:
+        throw std::string("Synthax Error : expected primary expression");
+    }
+}
+
+/*
+* handle multiplication and division
+
+    A   ->  E                       ( expression )
+    A   ->  E MUL E                 ( expression * expression )
+    A   ->  E DIV E                 ( expression / expression )
+*/
+double Parser::parseMulDiv()
+{
+    double d_result = parsePrimaryExpression();
+
+    while (true)
+    {
+        switch (m_lexer->getCurrentToken())
+        {
+        case ETokenType::MUL:
+
+            d_result *= parsePrimaryExpression();
+            break;
+
+        case ETokenType::DIV:
+        {
+
+            double d_temp = parsePrimaryExpression();
+            if (d_temp != 0.0)
+            {
+                d_result /= d_temp;
+                break;
+            }
+            else
+            {
+                throw std::string("Error : division by zero");
+            }
+        }
+
+        default:
+            return d_result;
+        }
+    }
+}
+
+/*
+* handle addition and substraction
+
+    B   ->  A                       ( multDiv )
+    B   ->  A PLUS A                ( multDiv + multDiv )
+    B   ->  A MINUS A               ( multDiv - multDiv )
+*/
+double Parser::parseAddSub()
+{
+    double d_result = parseMulDiv();
+
+    while (true)
+    {
+        switch (m_lexer->getCurrentToken())
+        {
+        case ETokenType::PLUS:
+
+            d_result += parseMulDiv();
+            break;
+
+        case ETokenType::MINUS:
+
+            d_result -= parseMulDiv();
+            break;
+
+        default:
+            return d_result;
+        }
+    }
+}
+
+/*
+    S   ->  B
+*/
+double Parser::calculate()
+{
+    //std::cout << "debut du calcul" << std::endl;
+    return parseAddSub();
+}
