@@ -1,2 +1,6 @@
-﻿  main.cpp
+﻿  ExpressionPreProcessor.cpp
+  Lexer.cpp
+  Parser.cpp
+  main.cpp
+  Génération de code en cours...
   CalculatorCode.vcxproj -> D:\Git\Repository\Calculator\Calculator\Debug\CalculatorCode.exe

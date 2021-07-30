@@ -20,9 +20,10 @@ public:
 	ExpressionPreProcessor(std::istream& stream);
 	/* Destructor */
 	~ExpressionPreProcessor();
-	void toString();
 
+	void toString();
 	void eval();
+
 private:
 	void exprResultPrint(double expr_result);
 };

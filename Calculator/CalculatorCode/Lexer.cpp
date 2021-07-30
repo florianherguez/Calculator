@@ -24,7 +24,7 @@ ETokenType Lexer::getCurrentToken()
 }
 
 /*
-* 
+* Get the next Token of the Expression
 */
 ETokenType Lexer::getNextToken()
 {
@@ -33,11 +33,11 @@ ETokenType Lexer::getNextToken()
 		return m_current_token = ETokenType::END;
 	}
 
-	char ch = m_expression.front();
+	char character = m_expression.front();
 	m_expression.erase(0, 1);
 
 	// handle operator and token's creation
-	switch (ch)
+	switch (character)
 	{
 	case '(':
 		return m_current_token = ETokenType::LEFT_PARE;
@@ -51,23 +51,43 @@ ETokenType Lexer::getNextToken()
 		return m_current_token = ETokenType::MUL;
 	case '/':
 		return m_current_token = ETokenType::DIV;
+	case '=':
+		return m_current_token = ETokenType::ASSIGN;
 	}
 
 	// handle NUMBER token's creation
-	if (std::isdigit(ch))
+	if (std::isdigit(character))
 	{
-		std::string s_number = "";
-		s_number += ch;
+		std::string number = "";
+		number += character;
 
 		while (!m_expression.empty() && (std::isdigit(m_expression.front()) || m_expression.front() == '.'))
 		{
-			s_number += m_expression.front();
+			number += m_expression.front();
 			m_expression.erase(0, 1);
 		}
 
-		m_number = std::stof(s_number);
+		m_number = std::stof(number);
 		return m_current_token = ETokenType::NUMBER;
 	}
+
+	// handle ID token's creation
+	if (std::isalpha(character))
+	{
+		std::string id = "";
+		id += character;
+
+		while (!m_expression.empty() && std::isalpha(m_expression.front()))
+		{
+			id += m_expression.front();
+			m_expression.erase(0, 1);
+		}
+
+		m_id = id;
+
+		return m_current_token = ETokenType::ID;
+	}
+
 	else
 	{
 		throw std::string("Lexer Error : a word of this sentence" + m_expression + "is not from this language");

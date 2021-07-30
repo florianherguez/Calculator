@@ -13,6 +13,9 @@ Parser::Parser(Lexer* lexer) : m_lexer(lexer){}
     E   ->  NUMBER                                      ( double )
     E   ->  MINUS E                                     ( - expression )
     E   ->  LEFT_PARE B RIGHT_PARE                      ( ( addSub ) )
+
+    E   ->  ID                                          ( saved double )
+    E   ->  NARY LEFT_PARE B [COMA B ...] RIGHT_PARE    ( nary_fun( addSub [, addSub ...] )
 */
 double Parser::parsePrimaryExpression()
 {
@@ -42,6 +45,21 @@ double Parser::parsePrimaryExpression()
         m_lexer->getNextToken();
 
         return d_result;
+    }
+
+    case ETokenType::ID:
+    {
+        //std::cout << "memoire" << std::endl;
+        double& id = m_memory[m_lexer->getId()];
+        m_lexer->getNextToken();
+
+        if (m_lexer->getCurrentToken() == ETokenType::ASSIGN)
+        {
+            //std::cout << "assignement" << std::endl;
+            id = parseAddSub();
+        }
+        //std::cout << "resultat id = " << id << std::endl;
+        return id;
     }
 
     default:
