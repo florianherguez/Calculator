@@ -71,7 +71,7 @@ ETokenType Lexer::getNextToken()
 		return m_current_token = ETokenType::NUMBER;
 	}
 
-	// handle ID token's creation
+	// handle Nary and ID token's creation
 	if (std::isalpha(character))
 	{
 		std::string id = "";
@@ -84,8 +84,16 @@ ETokenType Lexer::getNextToken()
 		}
 
 		m_id = id;
-
-		return m_current_token = ETokenType::ID;
+		// Create NARY token
+		if (isNaryFun(id))
+		{
+			return m_current_token = ETokenType::NARY;
+		}
+		// Create ID token
+		else
+		{
+			return m_current_token = ETokenType::ID;
+		}
 	}
 
 	else
@@ -102,4 +110,9 @@ void Lexer::setExpression(std::string const& s_expression)
 	std::string exp_temp = s_expression;
 	exp_temp.erase(std::remove(exp_temp.begin(), exp_temp.end(), ' '), exp_temp.end());
 	m_expression = exp_temp;
+}
+
+bool Lexer::isNaryFun(std::string str)
+{
+	return (str == "cos" || str == "sin" || str == "tan" || str == "log" || str == "exp" || str == "squrt" || str == "pow" || str == "hypot" || str == "lerp" || str == "polynome");
 }

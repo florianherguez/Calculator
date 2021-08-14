@@ -21,12 +21,18 @@ ExpressionPreProcessor::ExpressionPreProcessor(std::istream& stream)
 	m_parser = new Parser(m_lexer);
 }
 
+/*
+* Destructor
+*/
 ExpressionPreProcessor::~ExpressionPreProcessor()
 {
 	delete(m_parser);
 	delete(m_lexer);
 }
 
+/*
+* Print the expressions contained by the class
+*/
 void ExpressionPreProcessor::toString() {
 	std::queue<std::string> expressions = m_expressions;
 	while (!expressions.empty())
