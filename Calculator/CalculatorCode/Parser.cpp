@@ -15,6 +15,8 @@ Parser::Parser(Lexer* lexer) : m_lexer(lexer){}
     E   ->  LEFT_PARE B RIGHT_PARE                      ( ( addSub ) )
 
     E   ->  ID                                          ( saved double )
+    E   ->  ID ASSIGNED B                               ( saved double = addSub ))
+    
     E   ->  NARY LEFT_PARE B [COMA B ...] RIGHT_PARE    ( nary_fun( addSub [, addSub ...] )
 */
 double Parser::parsePrimaryExpression()
@@ -60,6 +62,42 @@ double Parser::parsePrimaryExpression()
         }
         //std::cout << "resultat id = " << id << std::endl;
         return id;
+    }
+
+    case ETokenType::NARY:
+    {
+        //std::cout << "unary function" << std::endl;
+        std::string nary_fun = m_lexer->getId();
+
+        m_lexer->getNextToken();
+
+        if (m_lexer->getCurrentToken() != ETokenType::LEFT_PARE)
+        {
+            throw std::string("Synthax Error : unary function missing left bracket");
+        }
+
+        std::list<double> params;
+        params.push_back(parseAddSub());
+
+        while (m_lexer->getCurrentToken() == ETokenType::COMA)
+        {
+            params.push_back(parseAddSub());
+        }
+
+        if (m_lexer->getCurrentToken() != ETokenType::RIGHT_PARE)
+        {
+            throw std::string("Synthax Error : unary function missing right bracket");
+        }
+
+        m_lexer->getNextToken();
+        try
+        {
+            return m_naries[nary_fun](params);
+        }
+        catch (std::string const& error)
+        {
+            std::cerr << error << std::endl;
+        }
     }
 
     default:

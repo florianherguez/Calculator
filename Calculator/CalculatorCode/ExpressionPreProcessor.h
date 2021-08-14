@@ -7,23 +7,20 @@
 
 class ExpressionPreProcessor
 {
-	/* Attribute */
+/* Attribute */
 private:
 	std::queue<std::string> m_expressions;
 
 	Lexer* m_lexer;
 	Parser* m_parser;
 
-	/* Methode */
+/* Methode */
 public:
-	/* Constructor */
 	ExpressionPreProcessor(std::istream& stream);
-	/* Destructor */
 	~ExpressionPreProcessor();
 
 	void toString();
 	void eval();
-
 private:
 	void exprResultPrint(double expr_result);
 };
